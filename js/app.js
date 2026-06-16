@@ -22,8 +22,6 @@ function showLogin() {
         <div class="form-group"><label>密码</label>
           <input id="loginPass" type="password" placeholder="请输入密码"></div>
         <button class="btn btn-primary" style="width:100%;padding:10px;font-size:15px" onclick="doLogin()">登 录</button>
-        <p style="margin-top:16px;font-size:11px;color:#999;text-align:center">
-          默认管理员账号：admin / admin123</p>
       </div>
     </div>`;
 }
