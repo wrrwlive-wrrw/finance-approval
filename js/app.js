@@ -3,6 +3,9 @@ let currentPage = 'dashboard';
 
 function initApp() {
   Store.initDefault();
+  // 清除旧版无密码的登录状态
+  const cur = Store.getCurrentUser();
+  if (cur && !cur.username) { Store.logout(); }
   const user = Store.getCurrentUser();
   if (!user) { showLogin(); return; }
   renderApp();

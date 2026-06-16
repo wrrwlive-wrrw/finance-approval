@@ -66,7 +66,10 @@ const Store = {
 
   // 初始化默认用户
   initDefault() {
-    if (this.getUsers().length === 0) {
+    const users = this.getUsers();
+    // 如果旧用户没有username字段，清除并重建
+    if (users.length === 0 || (users.length > 0 && !users[0].username)) {
+      this._set('users', []);
       this.addUser({ name: '张三', role: '员工', dept: '市场部', phone: '', username: 'zhangsan', password: '123456' });
       this.addUser({ name: '李主管', role: '部门主管', dept: '市场部', phone: '', username: 'lizg', password: '123456' });
       this.addUser({ name: '王财务', role: '财务经理', dept: '财务部', phone: '', username: 'wangcw', password: '123456' });
