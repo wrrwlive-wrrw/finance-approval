@@ -13,21 +13,27 @@ function showLogin() {
     <div class="login-page">
       <div class="login-card">
         <h2>财务审批系统</h2>
-        <div class="form-group"><label>选择用户登录</label>
-          <select id="loginUser">
-            ${Store.getUsers().map(u => `<option value="${u.id}">${u.name}（${u.role}）</option>`).join('')}
-          </select></div>
+        <p style="text-align:center;color:#888;font-size:12px;margin-bottom:20px">费用报销管理平台</p>
+        <div class="form-group"><label>用户名</label>
+          <input id="loginUser" placeholder="请输入用户名"></div>
+        <div class="form-group"><label>密码</label>
+          <input id="loginPass" type="password" placeholder="请输入密码"></div>
         <button class="btn btn-primary" style="width:100%;padding:10px;font-size:15px" onclick="doLogin()">登 录</button>
         <p style="margin-top:16px;font-size:11px;color:#999;text-align:center">
-          提示：可在"用户管理"中添加新用户</p>
+          默认管理员账号：admin / admin123</p>
       </div>
     </div>`;
 }
 
 function doLogin() {
-  const id = document.getElementById('loginUser').value;
-  const user = Store.getUsers().find(u => u.id === id);
-  if (user) { Store.setCurrentUser(user); renderApp(); }
+  const username = document.getElementById('loginUser').value.trim();
+  const password = document.getElementById('loginPass').value;
+  if (!username) { alert('请输入用户名'); return; }
+  const users = Store.getUsers();
+  const user = users.find(u => u.username === username && u.password === password);
+  if (!user) { alert('用户名或密码错误'); return; }
+  Store.setCurrentUser(user);
+  renderApp();
 }
 
 function doLogout() { Store.logout(); showLogin(); }

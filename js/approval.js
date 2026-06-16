@@ -106,20 +106,27 @@ function renderUsers(el) {
   const users = Store.getUsers();
   el.innerHTML += `<div class="card">
     <div style="margin-bottom:12px"><button class="btn btn-primary" onclick="showAddUser()">+ 添加用户</button></div>
-    <table><tr><th>姓名</th><th>角色</th><th>部门</th><th>操作</th></tr>
-    ${users.map(u => `<tr><td>${u.name}</td><td>${u.role}</td><td>${u.dept || '-'}</td>
-      <td><button class="btn btn-danger btn-sm" onclick="delUser('${u.id}')">删除</button></td></tr>`).join('')}
+    <table><tr><th>姓名</th><th>用户名</th><th>角色</th><th>部门</th><th>操作</th></tr>
+    ${users.map(u => `<tr><td>${u.name}</td><td>${u.username || '-'}</td><td>${u.role}</td><td>${u.dept || '-'}</td>
+      <td>
+        <button class="btn btn-ghost btn-sm" onclick="showChangePass('${u.id}')">改密码</button>
+        <button class="btn btn-danger btn-sm" onclick="delUser('${u.id}')">删除</button>
+      </td></tr>`).join('')}
     </table></div>`;
 }
 
 function showAddUser() {
   const html = `
-    <div class="form-group"><label>姓名</label><input id="uName"></div>
     <div class="form-row">
+      <div class="form-group"><label>姓名</label><input id="uName"></div>
+      <div class="form-group"><label>用户名（登录用）</label><input id="uUsername"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>密码</label><input id="uPass" type="password" value="123456"></div>
       <div class="form-group"><label>角色</label>
         <select id="uRole"><option>员工</option><option>部门主管</option><option>财务经理</option><option>总经理</option></select></div>
-      <div class="form-group"><label>部门</label><input id="uDept"></div>
-    </div>`;
+    </div>
+    <div class="form-group"><label>部门</label><input id="uDept"></div>`;
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
   overlay.innerHTML = `<div class="modal">
@@ -131,11 +138,43 @@ function showAddUser() {
 }
 
 function saveUser() {
-  const name = document.getElementById('uName').value;
-  if (!name) { alert('请输入姓名'); return; }
-  Store.addUser({ name, role: document.getElementById('uRole').value, dept: document.getElementById('uDept').value });
+  const name = document.getElementById('uName').value.trim();
+  const username = document.getElementById('uUsername').value.trim();
+  const password = document.getElementById('uPass').value;
+  if (!name || !username) { alert('请填写姓名和用户名'); return; }
+  if (!password) { alert('请设置密码'); return; }
+  const exists = Store.getUsers().find(u => u.username === username);
+  if (exists) { alert('用户名已存在'); return; }
+  Store.addUser({ name, username, password, role: document.getElementById('uRole').value, dept: document.getElementById('uDept').value });
   document.querySelector('.modal-overlay').remove();
   navigate('users');
+}
+
+function showChangePass(id) {
+  const user = Store.getUsers().find(u => u.id === id);
+  if (!user) return;
+  const html = `
+    <p style="margin-bottom:12px;color:#666">修改 <b>${user.name}</b> 的密码</p>
+    <div class="form-group"><label>新密码</label><input id="newPass" type="password" placeholder="请输入新密码"></div>
+    <div class="form-group"><label>确认密码</label><input id="confirmPass" type="password" placeholder="再次输入密码"></div>`;
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = `<div class="modal">
+    <div class="modal-header"><h3>修改密码</h3><button class="modal-close" onclick="this.closest('.modal-overlay').remove()">&times;</button></div>
+    <div class="modal-body">${html}</div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="this.closest('.modal-overlay').remove()">取消</button>
+      <button class="btn btn-primary" onclick="doChangePass('${id}')">确认修改</button></div></div>`;
+  document.body.appendChild(overlay);
+}
+
+function doChangePass(id) {
+  const newPass = document.getElementById('newPass').value;
+  const confirmPass = document.getElementById('confirmPass').value;
+  if (!newPass) { alert('请输入新密码'); return; }
+  if (newPass !== confirmPass) { alert('两次密码不一致'); return; }
+  Store.updateUser(id, { password: newPass });
+  document.querySelector('.modal-overlay').remove();
+  alert('密码修改成功');
 }
 
 function delUser(id) { if (confirm('确定删除？')) { Store.removeUser(id); navigate('users'); } }

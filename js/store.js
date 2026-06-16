@@ -67,10 +67,10 @@ const Store = {
   // 初始化默认用户
   initDefault() {
     if (this.getUsers().length === 0) {
-      this.addUser({ name: '张三', role: '员工', dept: '市场部', phone: '' });
-      this.addUser({ name: '李主管', role: '部门主管', dept: '市场部', phone: '' });
-      this.addUser({ name: '王财务', role: '财务经理', dept: '财务部', phone: '' });
-      this.addUser({ name: '赵总', role: '总经理', dept: '总经办', phone: '' });
+      this.addUser({ name: '张三', role: '员工', dept: '市场部', phone: '', username: 'zhangsan', password: '123456' });
+      this.addUser({ name: '李主管', role: '部门主管', dept: '市场部', phone: '', username: 'lizg', password: '123456' });
+      this.addUser({ name: '王财务', role: '财务经理', dept: '财务部', phone: '', username: 'wangcw', password: '123456' });
+      this.addUser({ name: '赵总', role: '总经理', dept: '总经办', phone: '', username: 'admin', password: 'admin123' });
     }
   }
 };
